@@ -1,0 +1,19 @@
+{
+  "name": "fast_theo_bot_discord",
+  "version": "1.0.0",
+  "description": "bot discord dédié au discord de la chaine twitch \"fast_theo\"",
+  "main": "bot.js",
+  "scripts": {
+    "test": ".help"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/val-005/fast_theo_bot_discord.git"
+  },
+  "author": "val_005",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/val-005/fast_theo_bot_discord/issues"
+  },
+  "homepage": "https://github.com/val-005/fast_theo_bot_discord#readme"
+}
