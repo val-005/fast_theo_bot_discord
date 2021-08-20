@@ -46,7 +46,7 @@ client.on('ready', () => {
 
 
 client.on('guildMemberAdd', member => {
-    var embed = new Discord.RichEmbed()
+    var embed = new Discord.MessageEmbed()
     .setTitle("Bienvenue !")
     .setDescription("**Bienvenue à** " + member + " **sur le discord, n'oublie pas de lire le règlement !**")
     .setColor("13FF00")
@@ -56,7 +56,7 @@ client.on('guildMemberAdd', member => {
 })
 
 client.on('guildMemberRemove', member => {
-    var embed = new Discord.RichEmbed()
+    var embed = new Discord.MessageEmbed()
     .setTitle("Départ")
     .setDescription("**A bientôt** " + member + " **!**")
     .setColor(color.rouge)
@@ -65,81 +65,32 @@ client.on('guildMemberRemove', member => {
 
 })
 
-// Captcha
-client.on('message', async message => {
-    if(message.content.startsWith(prefix + "startcaptcha")) {
-        message.delete()
-        if(!message.member.hasPermission("ADMINISTRATOR")) return message.reply("<a:gifvalidepas:706552843947212842> (ERREUR) **Vous n'avez pas la permission pour excuter cette commande !**").then(message => {
-            message.delete(10000)
-        })
-        var messageid = JSON.parse(fs.readFileSync('./Captcha jsons/msgcaptcha.json'))
-        message.channel.messages.fetch().then(messages => {
-            const botMessages = messages.filter(msg => msg.id === messageid);
-            message.channel.bulkDelete(botMessages);
-        })
-        const captchacr = Math.random().toString(36).slice(2, 8);
-        fs.writeFileSync('./Captcha jsons/captcha.json', JSON.stringify(captchacr))
-        message.channel.send('Bienvenue sur le discord ! \n**Veuillez entrer le captcha ci dessous pour avoir accès au discord !**\n \n`'+ captchacr + '` \n \nSi vous avez un problème , merci de contacter <@427701599281086464>').then(message => {
-            fs.writeFileSync('./Captcha jsons/msgcaptcha.json', JSON.stringify(message.id))
-        })
-    }
-    if(message.content.startsWith(prefix + "addrole")) {
-        const perfectEmoji = '👌'
-        var embed = new Discord.MessageEmbed()
-        .setTitle("Bienvenue !")
-        .setDescription("Veuillez cliquer sur la réaction ci dessous pour accéder au discord")
-        let messageEmbed = await message.channel.send(embed)
-        messageEmbed.react(perfectEmoji);
 
-
-    }
+var reactionmsgid = "878021518993551360"
+client.on("ready", (reaction, user) => {
+    var guild = client.guilds.cache.get('')
+    var channel = client.channels.cache.get('857254851283779604')
+channel.messages.fetch(reactionmsgid).then(m => {
+        console.log("Cached reaction message.");
+    })
 })
 
-client.on('ready', () => {
-    function captcha(){
-        var captchacr = Math.random().toString(36).slice(2, 8);
-        fs.writeFileSync('./Captcha jsons/captcha.json', JSON.stringify(captchacr))
-        var guild = client.guilds.cache.get('')
-        var channel = client.channels.cache.get('857243868634677278')
-        var messageid = JSON.parse(fs.readFileSync('./Captcha jsons/msgcaptcha.json'))
-    
-        channel.messages.fetch(messageid).then(m => {
-            m.edit('Bienvenue sur le discord ! \n**Veuillez entrer le captcha ci dessous pour avoir accès au discord !**\n \n`'+ captchacr + '` \n \nSi vous avez un problème , merci de contacter <@427701599281086464>')
-        })
-    
-    
-    }
-    captcha()
-    setInterval(captcha, 300000)
-    var channel = client.channels.cache.get('857243868634677278')
-    var message = channel.messages.fetch('858362089613951007')
-    
-})
-
-client.on('message', async message => {
-    var captchacr = JSON.parse(fs.readFileSync('./Captcha jsons/captcha.json'))
-    var logchannel = client.channels.cache.get('857244366576943125')
-    if(message.content === captchacr){
-        message.delete()
-        message.member.roles.add('857244205659586580')
-        if(message.member.roles.add){
-            let result = new Discord.MessageEmbed()
-            .setAuthor("Fast Théo Bot - Captcha", client.user.avatarURL)
-            .setDescription("Votre captcha a été vérifié ! Vous pouvez maintenant accéder au discord !")
-            .setThumbnail("https://cdn.discordapp.com/attachments/696076502701441064/706607384524488774/recaptcha.png")
-            .setColor(color.vert)
-            message.member.createDM().then(c => c.send(result))
-
-            let log = new Discord.MessageEmbed()
-            .setAuthor("Fast Théo Bot - Captcha", client.user.avatarURL)
-            .setDescription(`${message.member} à passé la vérification !`)
-            .setTimestamp()
-            .setColor(color.vert)
-            logchannel.send(log)
+client.on("messageReactionAdd", (reaction, user) => {
+    var guild = client.guilds.cache.get('857239343706144839')
+    if(reaction.emoji.id == "878027641096142948" && reaction.message.id === reactionmsgid) 
+        {
+            guild.members.fetch(user)
+                .then((member) => 
+                {
+                    member.roles.add("857244205659586580")
+                    .then(() => 
+                    {
+                        console.log(`Added the role to ${member.displayName}`);
+                    }
+                    );
+                });
         }
-    }
 })
-
 client.on('message', async message => {
     if (message.content.startsWith(prefix + "ping")) {
       message.delete()
@@ -301,7 +252,7 @@ client.on('message', function (message) {
     }
 
  
-    if (args[0].toLowerCase() === prefix + "clear") {
+    if (message.content.startsWith(prefix + "clear")) {
         if (!message.member.hasPermission('MANAGE_MESSAGES')) return message.channel.send("<a:validepasgif:701032668044722227> (ERREUR) **Vous n'avez pas la permission d'utiliser cette commande**").then(message => {
             message.delete(10000)
         })
@@ -318,7 +269,7 @@ client.on('message', function (message) {
         message.channel.bulkDelete(count + 1, true)
     }
  
-    if (args[0].toLowerCase() === prefix + "mute") {
+    if (message.content.startsWith(prefix + "mute")) {
         message.delete()
         if (!message.member.hasPermission('MANAGE_MESSAGES')) return message.channel.send("<a:validepasgif:701032668044722227> (ERREUR) **Vous n'avez pas la permission d'utiliser cette commande !**").then(message => {
             message.delete(10000)
@@ -345,7 +296,7 @@ client.on('message', function (message) {
                 message.guild.channels.get('710239191849631864').send(embed)
             }
     }
-    if (args[0].toLowerCase() === prefix + "unmute") {
+    if (message.content.startsWith(prefix + "unmute")) {
         message.delete()
         let muterole = message.guild.roles.find(role => role.name === 'Muet')
         if(!message.member.hasPermission('MANAGE_MESSAGES')) return message.channel.send("<a:validepasgif:701032668044722227> (ERREUR) Vous n'avez pas la permission d'utiliser cette commande.").then(message => {
