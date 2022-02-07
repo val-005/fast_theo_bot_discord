@@ -1,0 +1,30 @@
+name: Server Deploy
+ 
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ master ]
+#  pull_request:
+#    branches: [ main ]
+ 
+  workflow_dispatch:
+ 
+jobs:
+  deploy-via-ssh:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: ⚙️ Deploy on remote server
+      uses: appleboy/ssh-action@master
+      with:
+        host: 185.132.40.200
+        username: root
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+         cd /var/bots/fast_theo_bot_discord/
+         pm2 stop bot.js
+         git pull
+         npm i
+         pm2 start bot.js
