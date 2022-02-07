@@ -80,7 +80,7 @@ client.on('ready', async message => {
         const checkYoutube = async () => {
             const {LASTVIDEOID} = require('./youtubedata.json');
             var guild = client.guilds.cache.get('')
-            var channel = client.channels.cache.get('921712224416968747')
+            var channel = client.channels.cache.get('857198075616821258')
             const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
             const videos = response.data.items;
             const lastVideo = videos[0];
@@ -103,6 +103,7 @@ client.on('interactionCreate', async interaction => {
 
 
     if (commandName === 'help') {
+      "Il suffit de faire un / pour voir toutes les commandes disponibles et leur description."
 
     }
 
