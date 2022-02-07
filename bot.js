@@ -88,7 +88,7 @@ client.on('ready', async message => {
             const lastVideoId = lastVideo.id.videoId;
             if (lastVideoId !== LASTVIDEOID) {
                 fs.writeFileSync('./youtubedata.json', JSON.stringify({LASTVIDEOID: lastVideoId}));
-                channel.send(`@everyone **Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
+                channel.send(` **Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
         }
     }
     checkYoutube();
@@ -102,7 +102,7 @@ client.on('interactionCreate', async interaction => {
 
 
     if (commandName === 'help') {
-      "Il suffit de faire un / pour voir toutes les commandes disponibles et leur description."
+      interaction.reply ("Il suffit de faire un / pour voir toutes les commandes disponibles et leur description.");
 
     }
 
