@@ -1,19 +1,15 @@
 {
-  "name": "fast_theo_bot_discord",
-  "version": "1.0.0",
-  "description": "bot discord dédié au discord de la chaine twitch \"fast_theo\"",
-  "main": "bot.js",
-  "scripts": {
-    "test": ".help"
+  "dependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "axios": "^0.25.0",
+    "discord.js": "^13.6.0",
+    "fs": "^0.0.1-security",
+    "dotenv": "^8.2.0",
+    "googleapis": "^48.0.0",
+    "path": "^0.12.7"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/val-005/fast_theo_bot_discord.git"
-  },
-  "author": "val_005",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/val-005/fast_theo_bot_discord/issues"
-  },
-  "homepage": "https://github.com/val-005/fast_theo_bot_discord#readme"
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-google": "^0.14.0"
+  }
 }
