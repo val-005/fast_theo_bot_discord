@@ -102,7 +102,8 @@ client.on('interactionCreate', async interaction => {
 
 
     if (commandName === 'help') {
-      interaction.reply ("Il suffit de faire un / pour voir toutes les commandes disponibles et leur description.");
+      interaction.reply ({content : "Il suffit de faire un / pour voir toutes les commandes disponibles et leur description.", ephemeral: true});
+
 
     }
 
