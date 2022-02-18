@@ -122,7 +122,7 @@ client.on('ready', async message => {
    setInterval(checkYoutube, 1200000);
 
   async function callbackToDiscordChannel_TwitchNotification() {
-    const guild = client.guilds.cache.get('857198075172749332');
+    const guild = client.guilds.cache.get('857198075616821258');
 
 
     const streamInfo = await GET_streamInfo('640206489'); //-- ID: fast_theo 640206489 / -Viewer / -Titre / -Game / -> Actualisation tt les 2 min. 
@@ -148,7 +148,7 @@ client.on('ready', async message => {
           .setFooter({ text: "Alerte twitch", iconURL: client.user.avatarURL() })
           .setTimestamp()
 
-        guild.channels.cache.get("857198075616821258").send({
+        guild.channels.cache.get("940677193766424687").send({
           content: `Salut @everyone ! **${obj_stream.user_name}** est en live ! https://www.twitch.tv/${obj_stream.user_name}`,
           embeds: [embed]
         }, function (a) {
