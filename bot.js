@@ -114,6 +114,7 @@ client.on('ready', async message => {
     const Lastvideoname = lastVideo.snippet.title;
     const lastVideoId = lastVideo.id.videoId;
     if (lastVideoId !== LASTVIDEOID) {
+      console.log('ok');
       fs.writeFileSync('./youtubedata.json', JSON.stringify({ LASTVIDEOID: lastVideoId }));
       channel.send(`@everyone **Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
     }
