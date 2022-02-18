@@ -2,3 +2,4 @@ config.json
 deploy-config.json
 package-lock.json
 youtubedata.json
+db.json
