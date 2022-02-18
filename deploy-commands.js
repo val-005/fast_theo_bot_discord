@@ -7,7 +7,6 @@ const { clientId, guildId, token } = require('./deploy-config.json');
 const commands = [
 	new SlashCommandBuilder().setName('help').setDescription('Affiche les commandes disponible'),
 	new SlashCommandBuilder().setName('lastvideo').setDescription('Affiche la dernière vidéo de la chaîne youtube'),
-	new SlashCommandBuilder().setName('réseaux').setDescription('Affiche les réseaux de Théo'),
 ]
 	.map(command => command.toJSON());
 
