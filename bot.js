@@ -188,8 +188,12 @@ client.on('interactionCreate', async interaction => {
     const REQUEST_URL = `${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`
     axios.get(REQUEST_URL).then(response => {
       const videourl = response.data.items[0].id.videoId;
-      interaction.reply(`Dernière vidéo de théo => https://www.youtube.com/watch?v=${videourl}`);
+      interaction.reply({content: `Dernière vidéo de théo => https://www.youtube.com/watch?v=${videourl}`, ephemeral: true});
     });
+  }
+
+  if (commandName === 'réseaux') {
+      interaction.reply ({content : "Twitch: https://www.twitch.tv/fast_theo\nYoutube: https://www.youtube.com/channel/UCxqruUoare-3qIPZJFoKL7w\nDiscord: https://discord.gg/AttADVayrU\nTiktok: https://www.tiktok.com/@fast_theo?lang=fr", ephemeral: true});
   }
 
 });
