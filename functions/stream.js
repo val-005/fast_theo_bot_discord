@@ -2,7 +2,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync("db.json");
+const adapter = new FileSync("./db.json");
 const db = low(adapter);
 
 const db_t = db.get("config_twitch").value()[0];
