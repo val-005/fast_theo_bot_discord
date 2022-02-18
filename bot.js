@@ -1,4 +1,22 @@
-const { Client, Intents, GuildMember } = require('discord.js');
+const Discord = require("discord.js");
+const client = new Discord.Client({
+  disabledEvents: [
+    "TYPING_START"
+  ],
+  intents: [
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_MEMBERS,
+    Discord.Intents.FLAGS.GUILD_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_PRESENCES,
+    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+    Discord.Intents.FLAGS.DIRECT_MESSAGES,
+    Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
+  ]
+});
+
+
+
 const fs = require('fs');
 const path = require("path");
 const axios = require('axios');
@@ -6,15 +24,21 @@ const perspective = require('./perspective.js');
 const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID } = require('./config.json');
 
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.DIRECT_MESSAGES] });
-
 
 const YOUTUBE_REQUEST = `https://www.googleapis.com/youtube/v3/search?key=${GCLOUDAPIKEY}&channelId=${YTCHANNELID}`;
 
 client.once('ready', () => {
-	console.log('Ready!');
+  console.log('Ready!');
 });
 
+const { IsValidToken, UPDATE_AuthToken, GET_streamInfo } = require('./functions/stream.js')
+
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
+const adapter = new FileSync("./db.json");
+const db = low(adapter);
+
+db.defaults({ config_twitch: [] }).write()
 
 // Perspective API
 /**
@@ -36,20 +60,22 @@ async function evaluateMessage(message) {
   const userid = message.author.id;
 
 
-    if (scores['SEVERE_TOXICITY']) {
-      return true;
-    }
+  if (scores['SEVERE_TOXICITY']) {
+    return true;
+  }
 }
 
 client.on('messageCreate', async (message) => {
   // Ignore messages that aren't from a guild
-  // or are from a bot or commands
-if (!message.guild || message.author.bot || message.content.startsWith('/')) return;
+  // or are from a client or commands
+
+
+  if (!message.guild || message.author.client || message.content.startsWith('/')) return;
 
   // Evaluate attributes of user's message
-  let log = false;
+  let log;
   try {
-  //  log = await evaluateMessage(message);
+    log = await evaluateMessage(message);
   } catch (err) {
     console.log(err);
   }
@@ -61,7 +87,7 @@ if (!message.guild || message.author.bot || message.content.startsWith('/')) ret
     //.setAuthor("Log Perspective Api :", client.user.avatarURL)
     //.setDescription("<@"+ userid +"> a envoyé un message considéré comme toxique, \n voici le contenu de celui ci : \n "+ "`"+ message.content + "` \n \n Aucune sanction contre cet utilisateur ne sera prise automatiquement.")
     //.setTimestamp()
-   // logchannel.send(perspectivelog)
+    // logchannel.send(perspectivelog)
     // var dm = new Discord.MessageEmbed()
     //.setColor(color.rouge)
     //.setAuthor("Avertissement :", client.user.avatarURL)
@@ -76,45 +102,96 @@ if (!message.guild || message.author.bot || message.content.startsWith('/')) ret
 
 // Partie fonctions
 client.on('ready', async message => {
-    // fonction pour vérifier la sortie d'une nouvelle vidéo youtube
-        const checkYoutube = async () => {
-            const {LASTVIDEOID} = require('./youtubedata.json');
-            var guild = client.guilds.cache.get('')
-            var channel = client.channels.cache.get('857198075616821258')
-            const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
-            const videos = response.data.items;
-            const lastVideo = videos[0];
-            const Lastvideoname = lastVideo.snippet.title;
-            const lastVideoId = lastVideo.id.videoId;
-            if (lastVideoId !== LASTVIDEOID) {
-                fs.writeFileSync('./youtubedata.json', JSON.stringify({LASTVIDEOID: lastVideoId}));
-                channel.send(` **Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
-        }
+
+  // fonction pour vérifier la sortie d'une nouvelle vidéo youtube
+  const checkYoutube = async () => {
+    const { LASTVIDEOID } = require('./youtubedata.json');
+    var guild = client.guilds.cache.get('')
+    var channel = client.channels.cache.get('857198075616821258')
+    const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
+    const videos = response.data.items;
+    const lastVideo = videos[0];
+    const Lastvideoname = lastVideo.snippet.title;
+    const lastVideoId = lastVideo.id.videoId;
+    if (lastVideoId !== LASTVIDEOID) {
+      console.log('ok');
+      fs.writeFileSync('./youtubedata.json', JSON.stringify({ LASTVIDEOID: lastVideoId }));
+      channel.send(`@everyone **Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
     }
-    checkYoutube();
-    setInterval(checkYoutube, 1200000);
-    })
+  }
+   checkYoutube();
+   setInterval(checkYoutube, 1200000);
+
+  async function callbackToDiscordChannel_TwitchNotification() {
+    const guild = client.guilds.cache.get('857198075616821258');
+
+
+    const streamInfo = await GET_streamInfo('640206489'); //-- ID: fast_theo 640206489 / -Viewer / -Titre / -Game / -> Actualisation tt les 2 min. 
+    const local_streamDB = db.get('config_twitch').value()[0];
+
+    if (streamInfo.data.length !== 0) {
+      if (local_streamDB.IsOnline === false) {
+        db.get('config_twitch').find({ IsOnline: false }).assign({ IsOnline: true }).write();
+
+        if (local_streamDB.IsPublished === true) { return };
+
+        const obj_stream = streamInfo.data[0];
+        if (!obj_stream) { return console.error("An error happened (no obj_stream)") };
+        const embed = new Discord.MessageEmbed()
+          .setAuthor({ name: `${obj_stream.user_name}`})
+          .setThumbnail(`https://static-cdn.jtvnw.net/jtv_user_pictures/636cbc67-4818-4c71-afbc-b648a1102f93-profile_image-150x150.png`)
+          .setTitle(`${obj_stream.title}`)
+          .setURL('https://www.twitch.tv/fast_theo')
+          .setColor("0x6441a4")
+          .setImage((obj_stream.thumbnail_url).replace('{width}x{height}', '640x360'))
+          .addField('Viewers',  `${obj_stream.viewer_count}`, true)
+          .addField('Jeu', `${obj_stream.game_name}`, true)
+          .setFooter({ text: "Alerte twitch", iconURL: client.user.avatarURL() })
+          .setTimestamp()
+
+        guild.channels.cache.get("940677193766424687").send({
+          content: `Salut @everyone ! **${obj_stream.user_name}** est en live ! https://www.twitch.tv/${obj_stream.user_name}`,
+          embeds: [embed]
+        }, function (a) {
+          if (a !== null) {
+            throw new Error("An error happened while sending the message (TwitchNofication Start) : " + a)
+          }
+        })
+
+        db.get('config_twitch').find({ IsPublished: false }).assign({ IsPublished: true }).write();
+      } else {
+        return;
+      }
+    } else {
+      if (local_streamDB.IsOnline === true) {
+        db.get('config_twitch').find({ IsPublished: true }).assign({ IsPublished: false, IsOnline: false }).write()
+      }
+    }
+  }
+  callbackToDiscordChannel_TwitchNotification()
+  setInterval(callbackToDiscordChannel_TwitchNotification, 2 * 60 * 1000)
+})
+
+
 
 client.on('interactionCreate', async interaction => {
-	if (!interaction.isCommand()) return;
+  if (!interaction.isCommand()) return;
 
-	const { commandName } = interaction;
+  const { commandName } = interaction;
 
 
-    if (commandName === 'help') {
+  if (commandName === 'help') {
       interaction.reply ({content : "Il suffit de faire un / pour voir toutes les commandes disponibles et leur description.", ephemeral: true});
+  }
 
+  if (commandName === 'lastvideo') {
+    const REQUEST_URL = `${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`
+    axios.get(REQUEST_URL).then(response => {
+      const videourl = response.data.items[0].id.videoId;
+      interaction.reply(`Dernière vidéo de théo => https://www.youtube.com/watch?v=${videourl}`);
+    });
+  }
 
-    }
-
-	if (commandName === 'lastvideo') {
-        const REQUEST_URL = `${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`
-        axios.get(REQUEST_URL).then(response => {
-        const videourl = response.data.items[0].id.videoId;
-		interaction.reply(`Dernière vidéo de théo => https://www.youtube.com/watch?v=${videourl}`);
-        });
-    }
-	
 });
 
 client.login(DISCORD_TOKEN);
