@@ -107,14 +107,13 @@ client.on('ready', async message => {
   const checkYoutube = async () => {
     const { LASTVIDEOID } = require('/var/bots/fast_theo_bot_discord/config/youtubedata.json');
     var guild = client.guilds.cache.get('')
-    var channel = client.channels.cache.get('921712224416968747')
+    var channel = client.channels.cache.get('857198075616821258') // ID CHANNEL ANNONCES: 857198075616821258
     const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
     const videos = response.data.items;
     const lastVideo = videos[0];
     const Lastvideoname = lastVideo.snippet.title;
     const lastVideoId = lastVideo.id.videoId;
     if (lastVideoId !== LASTVIDEOID) {
-      console.log('ok');
       fs.writeFileSync('/var/bots/fast_theo_bot_discord/config/youtubedata.json', JSON.stringify({ LASTVIDEOID: lastVideoId }));
       channel.send(`**Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
     }
@@ -123,10 +122,10 @@ client.on('ready', async message => {
    setInterval(checkYoutube, 1200000);
 
   async function callbackToDiscordChannel_TwitchNotification() {
-    const guild = client.guilds.cache.get('921712224416968744');
+    const guild = client.guilds.cache.get('857198075172749332'); // ID Fast Theo: 857198075172749332
 
 
-    const streamInfo = await GET_streamInfo('96562014'); //-- ID: fast_theo 640206489 / -Viewer / -Titre / -Game / -> Actualisation tt les 2 min. 
+    const streamInfo = await GET_streamInfo('640206489'); //-- ID: fast_theo 640206489 / -Viewer / -Titre / -Game / -> Actualisation tt les 2 min. 
     const local_streamDB = db.get('config_twitch').value()[0];
 
     if (streamInfo.data.length !== 0) {
@@ -148,8 +147,8 @@ client.on('ready', async message => {
           .addField('Jeu', `${obj_stream.game_name}`, true)
           .setFooter({ text: "Alerte twitch", iconURL: client.user.avatarURL() })
           .setTimestamp()
-
-        guild.channels.cache.get("940677193766424687").send({
+        // ID CHANNEL ANNONCES: 857198075616821258
+        guild.channels.cache.get("857198075616821258").send({
           content: `Salut @everyone ! **${obj_stream.user_name}** est en live ! https://www.twitch.tv/${obj_stream.user_name}`,
           embeds: [embed]
         }, function (a) {
