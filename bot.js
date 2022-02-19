@@ -20,8 +20,8 @@ const client = new Discord.Client({
 const fs = require('fs');
 const path = require("path");
 const axios = require('axios');
-const perspective = require('./perspective.js');
-const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID } = require('./config.json');
+const perspective = require('/var/bots/fast_theo_bot_discord/perspective.js');
+const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID } = require('/var/bots/fast_theo_bot_discord/config/config.json');
 
 
 
@@ -31,11 +31,11 @@ client.once('ready', () => {
   console.log('Ready!');
 });
 
-const { IsValidToken, UPDATE_AuthToken, GET_streamInfo } = require('./functions/stream.js')
+const { IsValidToken, UPDATE_AuthToken, GET_streamInfo } = require('/var/bots/fast_theo_bot_discord/functions/stream.js')
 
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync("./db.json");
+const adapter = new FileSync("/var/bots/fast_theo_bot_discord/config/db.json");
 const db = low(adapter);
 
 db.defaults({ config_twitch: [] }).write()
@@ -105,7 +105,7 @@ client.on('ready', async message => {
 
   // fonction pour vérifier la sortie d'une nouvelle vidéo youtube
   const checkYoutube = async () => {
-    const { LASTVIDEOID } = require('./youtubedata.json');
+    const { LASTVIDEOID } = require('/var/bots/fast_theo_bot_discord/config/youtubedata.json');
     var guild = client.guilds.cache.get('')
     var channel = client.channels.cache.get('921712224416968747')
     const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
@@ -115,12 +115,12 @@ client.on('ready', async message => {
     const lastVideoId = lastVideo.id.videoId;
     if (lastVideoId !== LASTVIDEOID) {
       console.log('ok');
-      fs.writeFileSync('./youtubedata.json', JSON.stringify({ LASTVIDEOID: lastVideoId }));
-      channel.send(`@everyone **Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
+      fs.writeFileSync('/var/bots/fast_theo_bot_discord/config/youtubedata.json', JSON.stringify({ LASTVIDEOID: lastVideoId }));
+      channel.send(`**Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
     }
   }
-  // checkYoutube();
-  // setInterval(checkYoutube, 1200000);
+   checkYoutube();
+   setInterval(checkYoutube, 1200000);
 
   async function callbackToDiscordChannel_TwitchNotification() {
     const guild = client.guilds.cache.get('921712224416968744');
@@ -164,24 +164,6 @@ client.on('ready', async message => {
       }
     } else {
       if (local_streamDB.IsOnline === true) {
-
-        let embed = new Discord.MessageEmbed()
-          .setAuthor({ name: `ZerTeK - Live`, iconURL: 'https://images-ext-2.discordapp.net/external/XQQKInvGKupGoWmr29lrMcb-Be1uF483n6EaXbqUxqM/https/i.imgur.com/PSrWJld.png' })
-          .setColor("0x6441a4")
-          .setTitle("\n-------------------------------------\n`TWITCH FIN DE LIVE`")
-          .setDescription("\n\n ZerTeK vient de finir son live à bientôt :)\n\n*Merci d'être passé :)*")
-          .setFooter({ text: "• Communauté TrusT", iconURL: client.user.avatarURL() })
-          .setThumbnail("https://i.imgur.com/PSrWJld.png")
-          .setTimestamp()
-
-        guild.channels.cache.get("940677193766424687").send({
-          embeds: [embed]
-        }, function (a) {
-          if (a !== null) {
-            throw new Error("An error happened while sending the message (TwitchNofication end) : " + a)
-          }
-        })
-
         db.get('config_twitch').find({ IsPublished: true }).assign({ IsPublished: false, IsOnline: false }).write()
       }
     }
@@ -199,16 +181,20 @@ client.on('interactionCreate', async interaction => {
 
 
   if (commandName === 'help') {
+    interaction.reply ({content : "Il suffit de faire un / pour voir toutes les commandes disponibles et leur description.", ephemeral: true});
+}
 
-  }
+if (commandName === 'lastvideo') {
+  const REQUEST_URL = `${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`
+  axios.get(REQUEST_URL).then(response => {
+    const videourl = response.data.items[0].id.videoId;
+    interaction.reply({content: `Dernière vidéo de théo => https://www.youtube.com/watch?v=${videourl}`, ephemeral: true});
+  });
+}
 
-  if (commandName === 'lastvideo') {
-    const REQUEST_URL = `${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`
-    axios.get(REQUEST_URL).then(response => {
-      const videourl = response.data.items[0].id.videoId;
-      interaction.reply(`Dernière vidéo de théo => https://www.youtube.com/watch?v=${videourl}`);
-    });
-  }
+if (commandName === 'réseaux') {
+    interaction.reply ({content : "Twitch: https://www.twitch.tv/fast_theo\nYoutube: https://www.youtube.com/channel/UCxqruUoare-3qIPZJFoKL7w\nDiscord: https://discord.gg/AttADVayrU\nTiktok: https://www.tiktok.com/@fast_theo?lang=fr", ephemeral: true});
+}
 
 });
 
