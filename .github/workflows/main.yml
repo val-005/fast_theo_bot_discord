@@ -18,7 +18,7 @@ jobs:
     - name: ⚙️ Deploy on remote server
       uses: appleboy/ssh-action@master
       with:
-        host: ionos-s2.val005.fr
+        host: bots-actions.val005.fr
         username: bots
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
