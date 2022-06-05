@@ -20,7 +20,7 @@ const client = new Discord.Client({
 const fs = require('fs');
 const path = require("path");
 const axios = require('axios');
-const perspective = require('perspective.js');
+const perspective = require('/usr/src/bot/perspective.js');
 const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID } = require('/data/config/config.json');
 
 
