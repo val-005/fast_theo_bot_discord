@@ -17,7 +17,7 @@
 /* Example usage of some features of the Perspective API */
 const {google} = require('googleapis');
 
-const {GCLOUDAPIKEY} = require('/var/bots/fast_theo_bot_discord/config/config.json');
+const {GCLOUDAPIKEY} = require('/data/config/config.json');
 
 // Some supported attributes
 // attributes = ["TOXICITY", "SEVERE_TOXICITY", "IDENTITY_ATTACK", "INSULT",

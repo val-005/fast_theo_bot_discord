@@ -20,8 +20,8 @@ const client = new Discord.Client({
 const fs = require('fs');
 const path = require("path");
 const axios = require('axios');
-const perspective = require('/var/bots/fast_theo_bot_discord/perspective.js');
-const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID } = require('/var/bots/fast_theo_bot_discord/config/config.json');
+const perspective = require('perspective.js');
+const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID } = require('/data/config/config.json');
 
 
 
@@ -31,11 +31,11 @@ client.once('ready', () => {
   console.log('Ready!');
 });
 
-const { IsValidToken, UPDATE_AuthToken, GET_streamInfo } = require('/var/bots/fast_theo_bot_discord/functions/stream.js')
+const { IsValidToken, UPDATE_AuthToken, GET_streamInfo } = require('./functions/stream.js')
 
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync("/var/bots/fast_theo_bot_discord/config/db.json");
+const adapter = new FileSync("/data/config/db.json");
 const db = low(adapter);
 
 db.defaults({ config_twitch: [] }).write()
@@ -105,7 +105,7 @@ client.on('ready', async message => {
 
   // fonction pour vérifier la sortie d'une nouvelle vidéo youtube
   const checkYoutube = async () => {
-    const { LASTVIDEOID } = require('/var/bots/fast_theo_bot_discord/config/youtubedata.json');
+    const { LASTVIDEOID } = require('/data/config/youtubedata.json');
     var guild = client.guilds.cache.get('')
     var channel = client.channels.cache.get('857198075616821258') // ID CHANNEL ANNONCES: 857198075616821258
     const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
@@ -114,12 +114,12 @@ client.on('ready', async message => {
     const Lastvideoname = lastVideo.snippet.title;
     const lastVideoId = lastVideo.id.videoId;
     if (lastVideoId !== LASTVIDEOID) {
-      fs.writeFileSync('/var/bots/fast_theo_bot_discord/config/youtubedata.json', JSON.stringify({ LASTVIDEOID: lastVideoId }));
+      fs.writeFileSync('/data/config/youtubedata.json', JSON.stringify({ LASTVIDEOID: lastVideoId }));
       channel.send(`**Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
     }
   }
-   checkYoutube();
-   setInterval(checkYoutube, 1200000);
+ //  checkYoutube();
+ // setInterval(checkYoutube, 1200000);
 
   async function callbackToDiscordChannel_TwitchNotification() {
     const guild = client.guilds.cache.get('857198075172749332'); // ID Fast Theo: 857198075172749332
