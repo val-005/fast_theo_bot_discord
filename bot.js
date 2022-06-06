@@ -114,12 +114,12 @@ client.on('ready', async message => {
     const Lastvideoname = lastVideo.snippet.title;
     const lastVideoId = lastVideo.id.videoId;
     if (lastVideoId !== LASTVIDEOID) {
-      fs.writeFileSync('/data/config/youtubedata.json', JSON.stringify({ LASTVIDEOID: lastVideoId }));
+      fs.writeFileSync('/data/config/youtubedata.json', JSON.stringify({ LASTVIDEOID: Lastvideoname }));
       channel.send(`**Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
     }
   }
- //  checkYoutube();
- // setInterval(checkYoutube, 1200000);
+   checkYoutube();
+   setInterval(checkYoutube, 1200000);
 
   async function callbackToDiscordChannel_TwitchNotification() {
     const guild = client.guilds.cache.get('857198075172749332'); // ID Fast Theo: 857198075172749332
