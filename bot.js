@@ -21,7 +21,7 @@ const fs = require('fs');
 const path = require("path");
 const axios = require('axios');
 const perspective = require('/usr/src/bot/perspective.js');
-const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID } = require('/data/config/config.json');
+const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID, TWITCH_CHANNEL_ID, DISCORD_ID_CHANNEL_ANNONCE, DISCORD_GUILD_ID } = require('/data/config/config.json');
 
 
 
@@ -107,7 +107,7 @@ client.on('ready', async message => {
   const checkYoutube = async () => {
     const { LASTVIDEOID } = require('/data/config/youtubedata.json');
     var guild = client.guilds.cache.get('')
-    var channel = client.channels.cache.get('857198075616821258') // ID CHANNEL ANNONCES: 857198075616821258
+    var channel = client.channels.cache.get(DISCORD_ID_CHANNEL_ANNONCE) // ID CHANNEL ANNONCES: 857198075616821258
     const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
     const videos = response.data.items;
     const lastVideo = videos[0];
@@ -122,10 +122,10 @@ client.on('ready', async message => {
    setInterval(checkYoutube, 1200000);
 
   async function callbackToDiscordChannel_TwitchNotification() {
-    const guild = client.guilds.cache.get('857198075172749332'); // ID Fast Theo: 857198075172749332
+    const guild = client.guilds.cache.get(DISCORD_GUILD_ID); // ID Fast Theo: 857198075172749332
 
 
-    const streamInfo = await GET_streamInfo('640206489'); //-- ID: fast_theo 640206489 / -Viewer / -Titre / -Game / -> Actualisation tt les 2 min. 
+    const streamInfo = await GET_streamInfo(TWITCH_CHANNEL_ID); //-- ID: fast_theo 640206489 / -Viewer / -Titre / -Game / -> Actualisation tt les 2 min. 
     const local_streamDB = db.get('config_twitch').value()[0];
 
     if (streamInfo.data.length !== 0) {
@@ -140,7 +140,7 @@ client.on('ready', async message => {
           .setAuthor({ name: `${obj_stream.user_name}`})
           .setThumbnail(`https://static-cdn.jtvnw.net/jtv_user_pictures/636cbc67-4818-4c71-afbc-b648a1102f93-profile_image-150x150.png`)
           .setTitle(`${obj_stream.title}`)
-          .setURL('https://www.twitch.tv/fast_theo')
+          .setURL(`https://www.twitch.tv/${obj_stream.user_name}`)
           .setColor("0x6441a4")
           .setImage((obj_stream.thumbnail_url).replace('{width}x{height}', '640x360'))
           .addField('Viewers',  `${obj_stream.viewer_count}`, true)
@@ -148,7 +148,7 @@ client.on('ready', async message => {
           .setFooter({ text: "Alerte twitch", iconURL: client.user.avatarURL() })
           .setTimestamp()
         // ID CHANNEL ANNONCES: 857198075616821258
-        guild.channels.cache.get("857198075616821258").send({
+        guild.channels.cache.get(DISCORD_ID_CHANNEL_ANNONCE).send({
           content: `Salut @everyone ! **${obj_stream.user_name}** est en live ! https://www.twitch.tv/${obj_stream.user_name}`,
           embeds: [embed]
         }, function (a) {
