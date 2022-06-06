@@ -16,6 +16,17 @@ const client = new Discord.Client({
 });
 
 
+function formatDate(date, boolean) {
+  let day = []
+  let monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"];
+
+  day.push(date.getDate(), month = date.getMonth(), year = date.getFullYear(), hour = ('0' + date.getHours()).slice(-2), minutes = ('0' + date.getMinutes()).slice(-2))
+
+  day.splice(1)
+
+  return `${day.join('')} ${monthNames[parseInt(month, 10)]} ${year} ${boolean === true ? "à "+hour + ':' + minutes : ""}`;
+}
+
 
 const fs = require('fs');
 const path = require("path");
@@ -117,7 +128,7 @@ client.on('ready', async message => {
     if (Lastvideoname !== LASTVIDEONAME) {
       fs.writeFileSync('/data/config/youtubedata.json', JSON.stringify({ LASTVIDEONAME: Lastvideoname }));
       channel.send(`**Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`)
-      console.log(date + " : Nouvelle vidéo youtube, annonce envoyée");
+      console.log(new Date(), true + " : Nouvelle vidéo youtube, annonce envoyée");
     }
   }
    checkYoutube();
