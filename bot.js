@@ -116,7 +116,8 @@ client.on('ready', async message => {
     var date = new Date();
     if (Lastvideoname !== LASTVIDEONAME) {
       fs.writeFileSync('/data/config/youtubedata.json', JSON.stringify({ LASTVIDEONAME: Lastvideoname }));
-      channel.send(`**Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`).then(console.log(date + " : Nouvelle vidéo youtube, annonce envoyée"))
+      channel.send(`**Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`)
+      console.log(date + " : Nouvelle vidéo youtube, annonce envoyée");
     }
   }
    checkYoutube();
