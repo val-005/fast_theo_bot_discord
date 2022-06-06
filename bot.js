@@ -105,7 +105,7 @@ client.on('ready', async message => {
 
   // fonction pour vérifier la sortie d'une nouvelle vidéo youtube
   const checkYoutube = async () => {
-    const { LASTVIDEOID } = require('/data/config/youtubedata.json');
+    const { LASTVIDEONAME } = require('/data/config/youtubedata.json');
     var guild = client.guilds.cache.get('')
     var channel = client.channels.cache.get(DISCORD_ID_CHANNEL_ANNONCE) // ID CHANNEL ANNONCES: 857198075616821258
     const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
@@ -113,8 +113,8 @@ client.on('ready', async message => {
     const lastVideo = videos[0];
     const Lastvideoname = lastVideo.snippet.title;
     const lastVideoId = lastVideo.id.videoId;
-    if (lastVideoId !== LASTVIDEOID) {
-      fs.writeFileSync('/data/config/youtubedata.json', JSON.stringify({ LASTVIDEOID: Lastvideoname }));
+    if (Lastvideoname !== LASTVIDEONAME) {
+      fs.writeFileSync('/data/config/youtubedata.json', JSON.stringify({ LASTVIDEONAME: Lastvideoname }));
       channel.send(`**Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`);
     }
   }
