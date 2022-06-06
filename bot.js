@@ -39,7 +39,7 @@ const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID, TWITCH_CHANNEL_ID, DISCORD_ID_
 const YOUTUBE_REQUEST = `https://www.googleapis.com/youtube/v3/search?key=${GCLOUDAPIKEY}&channelId=${YTCHANNELID}`;
 
 client.once('ready', () => {
-  console.log('Ready!');
+  console.log(formatDate(new Date(), true), 'UTC : Connecté !');
 });
 
 const { IsValidToken, UPDATE_AuthToken, GET_streamInfo } = require('./functions/stream.js')
@@ -116,7 +116,7 @@ client.on('ready', async message => {
 
   // fonction pour vérifier la sortie d'une nouvelle vidéo youtube
   const checkYoutube = async () => {
-    const { LASTVIDEONAME } = require('/data/config/youtubedata.json');
+    const { LASTVIDEODATE } = require('/data/config/youtubedata.json');
     var guild = client.guilds.cache.get('')
     var channel = client.channels.cache.get(DISCORD_ID_CHANNEL_ANNONCE) // ID CHANNEL ANNONCES: 857198075616821258
     const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
@@ -124,9 +124,9 @@ client.on('ready', async message => {
     const lastVideo = videos[0];
     const Lastvideoname = lastVideo.snippet.title;
     const lastVideoId = lastVideo.id.videoId;
-    var date = new Date();
-    if (Lastvideoname !== LASTVIDEONAME) {
-      fs.writeFileSync('/data/config/youtubedata.json', JSON.stringify({ LASTVIDEONAME: Lastvideoname }));
+    const lastvideodate = lastVideo.snippet.publishedAt;
+    if (lastvideodate !== LASTVIDEODATE) {
+      fs.writeFileSync('/data/config/youtubedata.json', JSON.stringify({ LASTVIDEODATE: lastvideodate }));
       channel.send(`**Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`)
       console.log(formatDate(new Date(), true), "UTC : Nouvelle vidéo youtube, annonce postée");
     }
