@@ -6,20 +6,19 @@ name: Docker
 # documentation.
 
 on:
-  schedule:
-    - cron: '27 17 * * *'
   push:
     branches: [ "master", "dev" ]
-      paths-ignore:
+    paths-ignore:
        - '.github/**'
        - '.gitignore'
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ "master", "dev" ]
-      paths-ignore:
+   paths-ignore:
        - '.github/**'
        - '.gitignore'
+   branches: [ "master", "dev" ]
+
 
 env:
   # Use docker.io for Docker Hub if empty
