@@ -32,7 +32,7 @@ const fs = require('fs');
 const path = require("path");
 const axios = require('axios');
 const perspective = require('/usr/src/bot/perspective.js');
-const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID, TWITCH_CHANNEL_ID, DISCORD_ID_CHANNEL_ANNONCE, DISCORD_GUILD_ID, DISCORD_ID_CHANNEL_ANNONCE } = require('/data/config/config.json');
+const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID, TWITCH_CHANNEL_ID, DISCORD_ID_CHANNEL_ANNONCE, DISCORD_GUILD_ID, DISCORD_ID_CHANNEL_BIENVENUE } = require('/data/config/config.json');
 
 
 
@@ -44,9 +44,9 @@ client.once('ready', () => {
 
 
 client.on('guildMemberAdd', guildMember => {
-  guildMember.guild.channels.cache.get(DISCORD_ID_CHANNEL_ANNONCE).send(`**Veuillez souhaiter la bienvenue à , <@${guildMember.user.id}>!**`);
+  guildMember.guild.channels.cache.get(DISCORD_ID_CHANNEL_BIENVENUE).send(`**Veuillez souhaiter la bienvenue à , <@${guildMember.user.id}>!**`);
   setTimeout(() => {
-    const message = member.guild.channels.cache.get(DISCORD_ID_CHANNEL_ANNONCE).lastMessage
+    const message = member.guild.channels.cache.get(DISCORD_ID_CHANNEL_BIENVENUE).lastMessage
     message.react('🎉')
 }, 500)
 });
