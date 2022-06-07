@@ -32,7 +32,7 @@ const fs = require('fs');
 const path = require("path");
 const axios = require('axios');
 const perspective = require('/usr/src/bot/perspective.js');
-const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID, TWITCH_CHANNEL_ID, DISCORD_ID_CHANNEL_ANNONCE, DISCORD_GUILD_ID } = require('/data/config/config.json');
+const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID, TWITCH_CHANNEL_ID, DISCORD_ID_CHANNEL_ANNONCE, DISCORD_GUILD_ID, DISCORD_ID_CHANNEL_ANNONCE } = require('/data/config/config.json');
 
 
 
@@ -41,6 +41,16 @@ const YOUTUBE_REQUEST = `https://www.googleapis.com/youtube/v3/search?key=${GCLO
 client.once('ready', () => {
   console.log(formatDate(new Date(), true), 'UTC : Connecté !');
 });
+
+
+client.on('guildMemberAdd', guildMember => {
+  guildMember.guild.channels.cache.get(DISCORD_ID_CHANNEL_ANNONCE).send(`**Veuillez souhaiter la bienvenue à , <@${guildMember.user.id}>!**`);
+  setTimeout(() => {
+    const message = member.guild.channels.cache.get(DISCORD_ID_CHANNEL_ANNONCE).lastMessage
+    message.react('🎉')
+}, 500)
+});
+
 
 const { IsValidToken, UPDATE_AuthToken, GET_streamInfo } = require('./functions/stream.js')
 

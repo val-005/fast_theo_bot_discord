@@ -11,5 +11,5 @@ RUN npm install
 # Copie du bot
 COPY . /usr/src/bot
 
-# Start me!
+# Commande de lancement du bot
 CMD ["node", "bot.js"]
