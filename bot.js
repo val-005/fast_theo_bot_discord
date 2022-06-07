@@ -48,7 +48,7 @@ client.on('guildMemberAdd', guildMember => {
   setTimeout(() => {
     const message = client.channels.cache.get(DISCORD_ID_CHANNEL_BIENVENUE).lastMessage
     message.react('🎉')
-}, 500)
+}, 1000)
 });
 
 
