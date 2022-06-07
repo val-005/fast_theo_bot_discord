@@ -46,8 +46,7 @@ client.once('ready', () => {
 client.on('guildMemberAdd', guildMember => {
   guildMember.guild.channels.cache.get(DISCORD_ID_CHANNEL_BIENVENUE).send(`**Veuillez souhaiter la bienvenue à <@${guildMember.user.id}> !**`);
   setTimeout(() => {
-    const guild = DISCORD_GUILD_ID
-    const message = guild.channels.cache.get(DISCORD_ID_CHANNEL_BIENVENUE).lastMessage
+    const message = client.channels.cache.get(DISCORD_ID_CHANNEL_BIENVENUE).lastMessage
     message.react('🎉')
 }, 500)
 });
