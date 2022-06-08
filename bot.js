@@ -16,6 +16,18 @@ const client = new Discord.Client({
 });
 
 
+var color = {
+  bleuC: '008FFF',
+  violet: '9E00FF',
+  marron: 'FF7400',
+  violetrose: 'FF3DF9',
+  vert: '23FF00',
+  rouge: 'FF3333',
+  jaune: 'F3FF00',
+  jauneF: 'DCFF00'
+ };
+
+
 function formatDate(date, boolean) {
   let day = []
   let monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"];
@@ -204,6 +216,72 @@ client.on('interactionCreate', async interaction => {
 
   if (commandName === 'help') {
     interaction.reply ({content : "Il suffit de faire un / pour voir toutes les commandes disponibles et leur description.", ephemeral: true});
+}
+
+if (commandName === "clear") {
+  const permissions = interaction.channel.permissionsFor(interaction.member)
+  var nopermissions = new Discord.MessageEmbed()
+    .setColor(color.rouge)
+    .setTitle("Erreur")
+    .setDescription("Vous n'avez pas les permissions nécessaires pour utiliser cette commande.")
+  
+  if(!permissions.has("MANAGE_MESSAGES")) return interaction.reply({embeds: [nopermissions], ephemeral: true});
+  
+   
+  const { channel, options } = interaction;
+  const nombre = options.getNumber("nombre");
+  if(nombre > 100) {
+    interaction.reply({content: "Vous ne pouvez pas supprimer plus de 100 messages.", ephemeral: true});
+  } else {
+    const cible = options.getUser("cible");
+  const Messages = await channel.messages.fetch();
+  
+  if(cible) {
+  let i = 0;
+  const filtered = [];
+  (await Messages).filter((m) => {
+    if(m.author.id === cible.id && nombre > i) {
+      filtered.push(m);
+      i++;
+    }
+  })
+  await channel.bulkDelete(filtered, true).then(messages => {
+  
+    var embed_cible_1 = new Discord.MessageEmbed()
+    .setColor(color.vert)
+    .setTitle("Succès")
+    .setDescription(`1 message de ${cible} a été supprimé.`)
+  
+    var embed_cible_multi = new Discord.MessageEmbed()
+    .setColor(color.vert)
+    .setTitle("Succès")
+    .setDescription(`${messages.size} messages de ${cible} ont été supprimés.`)
+  
+  
+    if(messages.size === 1) {
+    interaction.reply({embeds: [embed_cible_1], ephemeral: true});
+    } else {
+    interaction.reply({embeds: [embed_cible_multi], ephemeral: true});
+    }
+  })
+  } else {
+    await channel.bulkDelete(nombre, true).then(messages => {
+      var embed_tous_1 = new Discord.MessageEmbed()
+      .setColor(color.vert)
+      .setTitle("Succès")
+      .setDescription(`1 message a été supprimé.`)
+      var embed_tous_multi = new Discord.MessageEmbed()
+      .setColor(color.vert)
+      .setTitle("Succès")
+      .setDescription(`${messages.size} messages ont été supprimés.`)
+      if(messages.size === 1) {
+        interaction.reply({embeds: [embed_tous_1], ephemeral: true});
+        } else {
+        interaction.reply({embeds: [embed_tous_multi], ephemeral: true});
+        }
+    });
+  }
+ } 
 }
 
 if (commandName === 'lastvideo') {
