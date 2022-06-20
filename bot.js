@@ -146,7 +146,7 @@ client.on('ready', async message => {
     var ytb_db = db.get('notifs_ytb').find().value();
     var guild = client.guilds.cache.get('')
     var channel = client.channels.cache.get(config.DISCORD_ID_CHANNEL_ANNONCE) // ID CHANNEL ANNONCES: 857198075616821258
-    const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
+    const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`).catch(err => console.log(err));
     const videos = response.data.items;
     const lastVideo = videos[0];
     const Lastvideoname = lastVideo.snippet.title;
