@@ -44,11 +44,7 @@ const fs = require('fs');
 const path = require("path");
 const axios = require('axios');
 const perspective = require('/usr/src/bot/perspective.js');
-const { DISCORD_TOKEN, GCLOUDAPIKEY, YTCHANNELID, TWITCH_CHANNEL_ID, DISCORD_ID_CHANNEL_ANNONCE, DISCORD_GUILD_ID, DISCORD_ID_CHANNEL_BIENVENUE } = require('/data/config/config.json');
 
-
-
-const YOUTUBE_REQUEST = `https://www.googleapis.com/youtube/v3/search?key=${GCLOUDAPIKEY}&channelId=${YTCHANNELID}`;
 
 client.once('ready', () => {
   console.log(formatDate(new Date(), true), 'UTC : Connecté !');
@@ -56,9 +52,9 @@ client.once('ready', () => {
 
 
 client.on('guildMemberAdd', guildMember => {
-  guildMember.guild.channels.cache.get(DISCORD_ID_CHANNEL_BIENVENUE).send(`**Veuillez souhaiter la bienvenue à <@${guildMember.user.id}> !**`);
+  guildMember.guild.channels.cache.get(config.DISCORD_ID_CHANNEL_BIENVENUE).send(`**Veuillez souhaiter la bienvenue à <@${guildMember.user.id}> !**`);
   setTimeout(() => {
-    const message = client.channels.cache.get(DISCORD_ID_CHANNEL_BIENVENUE).lastMessage
+    const message = client.channels.cache.get(config.DISCORD_ID_CHANNEL_BIENVENUE).lastMessage
     message.react('🎉')
 }, 1000)
 });
@@ -72,6 +68,15 @@ const adapter = new FileSync("/data/config/db.json");
 const db = low(adapter);
 
 db.defaults({ config_twitch: [] }).write()
+db.defaults({ notifs_ytb: [] }).write()
+
+var config = db.get('config').find().value();
+
+
+
+const YOUTUBE_REQUEST = `https://www.googleapis.com/youtube/v3/search?key=${config.GCLOUDAPIKEY}&channelId=${config.YTCHANNELID}`;
+
+
 
 // Perspective API
 /**
@@ -138,18 +143,18 @@ client.on('ready', async message => {
 
   // fonction pour vérifier la sortie d'une nouvelle vidéo youtube
   const checkYoutube = async () => {
-    const { LASTVIDEODATE } = require('/data/config/youtubedata.json');
+    var ytb_db = db.get('notifs_ytb').find().value();
     var guild = client.guilds.cache.get('')
-    var channel = client.channels.cache.get(DISCORD_ID_CHANNEL_ANNONCE) // ID CHANNEL ANNONCES: 857198075616821258
+    var channel = client.channels.cache.get(config.DISCORD_ID_CHANNEL_ANNONCE) // ID CHANNEL ANNONCES: 857198075616821258
     const response = await axios.get(`${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`);
     const videos = response.data.items;
     const lastVideo = videos[0];
     const Lastvideoname = lastVideo.snippet.title;
     const lastVideoId = lastVideo.id.videoId;
     const lastvideodate = lastVideo.snippet.publishedAt;
-    if (lastvideodate !== LASTVIDEODATE) {
-      fs.writeFileSync('/data/config/youtubedata.json', JSON.stringify({ LASTVIDEODATE: lastvideodate }));
-      channel.send(`**Nouvelle vidéo youtube !** \n ${Lastvideoname} \n https://www.youtube.com/watch?v=${lastVideoId}`)
+    if (lastvideodate !== ytb_db.lastvideo_date) {
+      db.get('notifs_ytb').find({ lastvideo_date: ytb_db.lastvideo_date }).assign({ lastvideo_date: lastvideodate }).write();
+      channel.send(`**Nouvelle vidéo youtube !** \n${Lastvideoname} \nhttps://www.youtube.com/watch?v=${lastVideoId}`)
       console.log(formatDate(new Date(), true), "UTC : Nouvelle vidéo youtube, annonce postée");
     }
   }
@@ -157,10 +162,10 @@ client.on('ready', async message => {
    setInterval(checkYoutube, 1200000);
 
   async function callbackToDiscordChannel_TwitchNotification() {
-    const guild = client.guilds.cache.get(DISCORD_GUILD_ID); // ID Fast Theo: 857198075172749332
+    const guild = client.guilds.cache.get(config.DISCORD_GUILD_ID); // ID Fast Theo: 857198075172749332
 
 
-    const streamInfo = await GET_streamInfo(TWITCH_CHANNEL_ID); //-- ID: fast_theo 640206489 / -Viewer / -Titre / -Game / -> Actualisation tt les 2 min. 
+    const streamInfo = await GET_streamInfo(config.TWITCH_CHANNEL_ID); //-- ID: fast_theo 640206489 / -Viewer / -Titre / -Game / -> Actualisation tt les 2 min. 
     const local_streamDB = db.get('config_twitch').value()[0];
 
     if (streamInfo.data.length !== 0) {
@@ -183,7 +188,7 @@ client.on('ready', async message => {
           .setFooter({ text: "Alerte twitch", iconURL: client.user.avatarURL() })
           .setTimestamp()
         // ID CHANNEL ANNONCES: 857198075616821258
-        guild.channels.cache.get(DISCORD_ID_CHANNEL_ANNONCE).send({
+        guild.channels.cache.get(config.DISCORD_ID_CHANNEL_ANNONCE).send({
           content: `Salut @everyone ! **${obj_stream.user_name}** est en live ! https://www.twitch.tv/${obj_stream.user_name}`,
           embeds: [embed]
         }, function (a) {
@@ -298,4 +303,4 @@ if (commandName === 'réseaux') {
 
 });
 
-client.login(DISCORD_TOKEN);
+client.login(config.DISCORD_TOKEN);
