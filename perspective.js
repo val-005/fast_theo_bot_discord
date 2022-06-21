@@ -17,7 +17,7 @@
 /* Example usage of some features of the Perspective API */
 const {google} = require('googleapis');
 
-const {GCLOUDAPIKEY} = require('/data/config/config.json');
+var config = db.get('config').find().value();
 
 // Some supported attributes
 // attributes = ["TOXICITY", "SEVERE_TOXICITY", "IDENTITY_ATTACK", "INSULT",
@@ -51,7 +51,7 @@ async function analyzeText(text) {
   };
 
   const res = await analyzer.comments.analyze({
-    key: GCLOUDAPIKEY,
+    key: config.GCLOUDAPIKEY,
     resource: req},
   );
 
