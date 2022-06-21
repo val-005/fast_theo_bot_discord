@@ -17,6 +17,11 @@
 /* Example usage of some features of the Perspective API */
 const {google} = require('googleapis');
 
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
+const adapter = new FileSync("/data/config/db.json");
+const db = low(adapter);
+
 var config = db.get('config').find().value();
 
 // Some supported attributes
