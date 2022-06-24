@@ -72,8 +72,6 @@ db.defaults({ notifs_ytb: [] }).write()
 
 var config = db.get('config').find().value();
 
-
-
 const YOUTUBE_REQUEST = `https://www.googleapis.com/youtube/v3/search?key=${config.GCLOUDAPIKEY}&channelId=${config.YTCHANNELID}`;
 
 
@@ -208,7 +206,7 @@ client.on('ready', async message => {
     }
   }
   callbackToDiscordChannel_TwitchNotification()
-  setInterval(callbackToDiscordChannel_TwitchNotification, 2 * 60 * 1000)
+  setInterval(callbackToDiscordChannel_TwitchNotification, 4 * 60 * 1000)
 })
 
 
