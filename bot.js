@@ -163,7 +163,12 @@ client.on('ready', async message => {
     const guild = client.guilds.cache.get(config.DISCORD_GUILD_ID); // ID Fast Theo: 857198075172749332
 
 
-    const streamInfo = await GET_streamInfo(config.TWITCH_CHANNEL_ID); //-- ID: fast_theo 640206489 / -Viewer / -Titre / -Game / -> Actualisation tt les 2 min. 
+    const streamInfo = await GET_streamInfo(config.TWITCH_CHANNEL_ID); //-- ID: fast_theo 640206489 / -Viewer / -Titre / -Game / -> Actualisation tt les 2 min.
+        if (streamInfo.error) {
+          console.log(formatDate(new Date(), true), "UTC : Erreur lors de la récupération des informations Twitch");
+          return;
+        }
+
     const local_streamDB = db.get('config_twitch').value()[0];
 
     if (streamInfo.data.length !== 0) {
@@ -206,7 +211,7 @@ client.on('ready', async message => {
     }
   }
   callbackToDiscordChannel_TwitchNotification()
-  setInterval(callbackToDiscordChannel_TwitchNotification, 4 * 60 * 1000)
+  setInterval(callbackToDiscordChannel_TwitchNotification, 2 * 60 * 1000)
 })
 
 
