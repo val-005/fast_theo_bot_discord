@@ -159,6 +159,21 @@ client.on('ready', async message => {
    checkYoutube();
    setInterval(checkYoutube, 1200000);
 
+   const checkstatus = async () => {
+    // authenticate with cloudflare access token
+    const auth = {
+      headers: {
+        'X-Auth-Email': config.CLOUDFLARE_EMAIL,
+        'X-Auth-Key': config.CLOUDFLARE_KEY
+      }
+    };
+    // get https://status.val005.fr with cloudflare access token
+    const response = await axios.get('https://status.val005.fr/api/push/jDpeM3SvNS?status=up&msg=OK&ping=', auth);
+    console.log(response)
+  }
+   checkstatus();
+   setInterval(checkstatus, 1 * 60 * 1000);
+
   async function callbackToDiscordChannel_TwitchNotification() {
     const guild = client.guilds.cache.get(config.DISCORD_GUILD_ID); // ID Fast Theo: 857198075172749332
 
