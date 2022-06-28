@@ -163,16 +163,17 @@ client.on('ready', async message => {
     // authenticate with cloudflare access token
     const auth = {
       headers: {
-        'CF-Access-Client-Id': config.CLOUDFLARE_EMAIL,
+        'CF-Access-Client-Id': config.CLOUDFLARE_ID,
         'CF-Access-Client-Secret': config.CLOUDFLARE_KEY
       }
     };
-    // get https://status.val005.fr with cloudflare access token
-    const response = await axios.get('https://status.val005.fr/api/push/jDpeM3SvNS?status=up&msg=OK&ping=', auth);
-    console.log(response)
+    // get request status with cloudflare access token
+    await axios.get(config.CHECK_STATUS_REQUEST_LINK, auth);
   }
+  if(config.CHECK_STATUS = true) {
    checkstatus();
-   setInterval(checkstatus, 1 * 60 * 1000);
+   setInterval(checkstatus, config.CHECK_STATUS_INTERVAL_MIN * 60 * 1000);
+  }
 
   async function callbackToDiscordChannel_TwitchNotification() {
     const guild = client.guilds.cache.get(config.DISCORD_GUILD_ID); // ID Fast Theo: 857198075172749332
