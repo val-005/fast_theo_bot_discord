@@ -163,8 +163,8 @@ client.on('ready', async message => {
     // authenticate with cloudflare access token
     const auth = {
       headers: {
-        'X-Auth-Email': config.CLOUDFLARE_EMAIL,
-        'X-Auth-Key': config.CLOUDFLARE_KEY
+        'CF-Access-Client-Id': config.CLOUDFLARE_EMAIL,
+        'CF-Access-Client-Secret': config.CLOUDFLARE_KEY
       }
     };
     // get https://status.val005.fr with cloudflare access token
