@@ -170,7 +170,7 @@ client.on('ready', async message => {
     // get request status with cloudflare access token
     await axios.get(config.CHECK_STATUS_REQUEST_LINK, auth);
   }
-  if(config.CHECK_STATUS = true) {
+  if(config.CHECK_STATUS === true) {
    checkstatus();
    setInterval(checkstatus, config.CHECK_STATUS_INTERVAL_MIN * 60 * 1000);
   }
