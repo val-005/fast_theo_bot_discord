@@ -317,7 +317,81 @@ if (commandName === 'lastvideo') {
 }
 
 if (commandName === 'réseaux') {
-    interaction.reply ({content : "Twitch: https://www.twitch.tv/fast_theo\nYoutube: https://www.youtube.com/channel/UCxqruUoare-3qIPZJFoKL7w\nDiscord: https://discord.gg/AttADVayrU\nTiktok: https://www.tiktok.com/@fast_theo?lang=fr", ephemeral: true});
+  let branchMenu = new Discord.MessageActionRow()
+  .addComponents([
+    new Discord.MessageSelectMenu()
+    .setCustomId('réseaux')
+    .setPlaceholder('Choisissez un réseau')
+    .addOptions([
+      {
+        label: 'Twitch',
+        description: 'Chaine Twitch',
+        value: `Twitch`,
+        emoji: '🎥',
+      },
+      {
+        label: 'YouTube',
+        description: 'Chaine youtube',
+        value: `Youtube`,
+        emoji: '🎥',
+      },
+      {
+        label: 'Tiktok',
+        description: 'Compte tiktok',
+        value: `Tiktok`,
+        emoji: '🎥',
+      }
+    ])
+  ])
+interaction.reply({
+  content: 'Voici les plateformes / réseaux sociaux ou vous pouvez me retrouver :',
+  components: [branchMenu],
+  ephemeral: true,
+});
+}else if (interaction.isSelectMenu()){
+  if(interaction.customId === "réseaux"){
+
+    if (interaction.values[0] === "Youtube"){
+      const youtube = new Discord.MessageEmbed()
+        .setColor(color.rouge)
+        .setDescription("https://www.youtube.com/channel/UCxqruUoare-3qIPZJFoKL7w")
+        
+      await interaction.update({
+        content: "Voici ma chaine YouTube :",
+        components: [],
+        embeds: [youtube],
+        ephemeral: true
+      })
+      
+    }
+    if (interaction.values[0] === "Twitch"){
+      const twitch = new Discord.MessageEmbed()
+        .setColor(color.violet)
+        .setDescription("https://twitch.tv/fast_theo")
+        
+      await interaction.update({
+        content: "Voici ma chaine Twitch :",
+        components: [],
+        embeds: [twitch],
+        ephemeral: true
+      })
+      
+    }
+    if (interaction.values[0] === "Tiktok"){
+      const tiktok = new Discord.MessageEmbed()
+        .setColor('FF4F67')
+        .setDescription("https://www.tiktok.com/@fast_theo")
+        
+      await interaction.update({
+        content: "Voici mon compte tiktok:",
+        components: [],
+        embeds: [tiktok],
+        ephemeral: true
+      })
+      
+    }
+
+  }
 }
 
 });
