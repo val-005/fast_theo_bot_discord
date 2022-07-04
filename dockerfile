@@ -1,4 +1,5 @@
 FROM node:latest
+LABEL com.centurylinklabs.watchtower.enable="true"
 
 # Creation du repertoire
 RUN mkdir -p /usr/src/bot
