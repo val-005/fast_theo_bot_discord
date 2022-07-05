@@ -327,19 +327,19 @@ if (commandName === 'réseaux') {
         label: 'Twitch',
         description: 'Chaine Twitch',
         value: `Twitch`,
-        emoji: '🎥',
+        emoji: `<:twitch:${config.DISCORD_GUILD_ID}>`,
       },
       {
         label: 'YouTube',
         description: 'Chaine youtube',
         value: `Youtube`,
-        emoji: '🎥',
+        emoji: `<:youtube:${config.DISCORD_GUILD_ID}>`,
       },
       {
         label: 'Tiktok',
         description: 'Compte tiktok',
         value: `Tiktok`,
-        emoji: '🎥',
+        emoji: `<:tiktok:${config.DISCORD_GUILD_ID}>`,
       }
     ])
   ])
