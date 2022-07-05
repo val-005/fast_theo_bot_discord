@@ -231,169 +231,173 @@ client.on('ready', async message => {
 })
 
 
-
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
-
   const { commandName } = interaction;
 
+  if(interaction.isCommand()){
 
-  if (commandName === 'help') {
-    interaction.reply ({content : "Il suffit de faire un / pour voir toutes les commandes disponibles et leur description.", ephemeral: true});
-}
-
-if (commandName === "clear") {
-  const permissions = interaction.channel.permissionsFor(interaction.member)
-  var nopermissions = new Discord.MessageEmbed()
-    .setColor(color.rouge)
-    .setTitle("Erreur")
-    .setDescription("Vous n'avez pas les permissions nécessaires pour utiliser cette commande.")
-  
-  if(!permissions.has("MANAGE_MESSAGES")) return interaction.reply({embeds: [nopermissions], ephemeral: true});
-  
-   
-  const { channel, options } = interaction;
-  const nombre = options.getNumber("nombre");
-  if(nombre > 100) {
-    interaction.reply({content: "Vous ne pouvez pas supprimer plus de 100 messages.", ephemeral: true});
-  } else {
-    const cible = options.getUser("cible");
-  const Messages = await channel.messages.fetch();
-  
-  if(cible) {
-  let i = 0;
-  const filtered = [];
-  (await Messages).filter((m) => {
-    if(m.author.id === cible.id && nombre > i) {
-      filtered.push(m);
-      i++;
+    if (commandName === 'help') {
+      interaction.reply({ content: "Il suffit de faire un / pour voir toutes les commandes disponibles et leur description.", ephemeral: true });
     }
-  })
-  await channel.bulkDelete(filtered, true).then(messages => {
   
-    var embed_cible_1 = new Discord.MessageEmbed()
-    .setColor(color.vert)
-    .setTitle("Succès")
-    .setDescription(`1 message de ${cible} a été supprimé.`)
-  
-    var embed_cible_multi = new Discord.MessageEmbed()
-    .setColor(color.vert)
-    .setTitle("Succès")
-    .setDescription(`${messages.size} messages de ${cible} ont été supprimés.`)
-  
-  
-    if(messages.size === 1) {
-    interaction.reply({embeds: [embed_cible_1], ephemeral: true});
-    } else {
-    interaction.reply({embeds: [embed_cible_multi], ephemeral: true});
+    if (commandName === 'lastvideo') {
+      const REQUEST_URL = `${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`
+      axios.get(REQUEST_URL).then(response => {
+        const videourl = response.data.items[0].id.videoId;
+        interaction.reply({ content: `Dernière vidéo de théo => https://www.youtube.com/watch?v=${videourl}`, ephemeral: true });
+      });
     }
-  })
-  } else {
-    await channel.bulkDelete(nombre, true).then(messages => {
-      var embed_tous_1 = new Discord.MessageEmbed()
-      .setColor(color.vert)
-      .setTitle("Succès")
-      .setDescription(`1 message a été supprimé.`)
-      var embed_tous_multi = new Discord.MessageEmbed()
-      .setColor(color.vert)
-      .setTitle("Succès")
-      .setDescription(`${messages.size} messages ont été supprimés.`)
-      if(messages.size === 1) {
-        interaction.reply({embeds: [embed_tous_1], ephemeral: true});
-        } else {
-        interaction.reply({embeds: [embed_tous_multi], ephemeral: true});
-        }
-    });
-  }
- } 
-}
-
-if (commandName === 'lastvideo') {
-  const REQUEST_URL = `${YOUTUBE_REQUEST}&part=snippet,id&order=date&maxResults=1`
-  axios.get(REQUEST_URL).then(response => {
-    const videourl = response.data.items[0].id.videoId;
-    interaction.reply({content: `Dernière vidéo de théo => https://www.youtube.com/watch?v=${videourl}`, ephemeral: true});
-  });
-}
-
-if (commandName === 'réseaux') {
-  let branchMenu = new Discord.MessageActionRow()
-  .addComponents([
-    new Discord.MessageSelectMenu()
-    .setCustomId('réseaux')
-    .setPlaceholder('Choisissez un réseau')
-    .addOptions([
-      {
-        label: 'Twitch',
-        description: 'Chaine Twitch',
-        value: `Twitch`,
-        emoji: '🎮',
-      },
-      {
-        label: 'YouTube',
-        description: 'Chaine youtube',
-        value: `Youtube`,
-        emoji: '🎥',
-      },
-      {
-        label: 'Tiktok',
-        description: 'Compte tiktok',
-        value: `Tiktok`,
-        emoji: '📱',
-      }
-    ])
-  ])
-interaction.reply({
-  content: 'Voici les plateformes / réseaux sociaux ou vous pouvez me retrouver :',
-  components: [branchMenu],
-  ephemeral: true,
-});
-}else if (interaction.isSelectMenu()){
-  if(interaction.customId === "réseaux"){
-
-    if (interaction.values[0] === "Youtube"){
-      const youtube = new Discord.MessageEmbed()
+  
+  
+    if (commandName === "clear") {
+      const permissions = interaction.channel.permissionsFor(interaction.member)
+      var nopermissions = new Discord.MessageEmbed()
         .setColor(color.rouge)
-        .setDescription("https://www.youtube.com/channel/UCxqruUoare-3qIPZJFoKL7w")
-        
-      await interaction.update({
-        content: "Voici ma chaine YouTube :",
-        components: [],
-        embeds: [youtube],
-        ephemeral: true
-      })
+        .setTitle("Erreur")
+        .setDescription("Vous n'avez pas les permissions nécessaires pour utiliser cette commande.")
+  
+      if (!permissions.has("MANAGE_MESSAGES")) return interaction.reply({ embeds: [nopermissions], ephemeral: true });
+  
+  
+      const { channel, options } = interaction;
+      const nombre = options.getNumber("nombre");
+      if (nombre > 100) {
+        interaction.reply({ content: "Vous ne pouvez pas supprimer plus de 100 messages.", ephemeral: true });
+      } else {
+        const cible = options.getUser("cible");
+        const Messages = await channel.messages.fetch();
+  
+        if (cible) {
+          let i = 0;
+          const filtered = [];
+          (await Messages).filter((m) => {
+            if (m.author.id === cible.id && nombre > i) {
+              filtered.push(m);
+              i++;
+            }
+          })
+          await channel.bulkDelete(filtered, true).then(messages => {
+  
+            var embed_cible_1 = new Discord.MessageEmbed()
+              .setColor(color.vert)
+              .setTitle("Succès")
+              .setDescription(`1 message de ${cible} a été supprimé.`)
+  
+            var embed_cible_multi = new Discord.MessageEmbed()
+              .setColor(color.vert)
+              .setTitle("Succès")
+              .setDescription(`${messages.size} messages de ${cible} ont été supprimés.`)
+  
+  
+            if (messages.size === 1) {
+              interaction.reply({ embeds: [embed_cible_1], ephemeral: true });
+            } else {
+              interaction.reply({ embeds: [embed_cible_multi], ephemeral: true });
+            }
+          })
+        } else {
+          await channel.bulkDelete(nombre, true).then(messages => {
+            var embed_tous_1 = new Discord.MessageEmbed()
+              .setColor(color.vert)
+              .setTitle("Succès")
+              .setDescription(`1 message a été supprimé.`)
+            var embed_tous_multi = new Discord.MessageEmbed()
+              .setColor(color.vert)
+              .setTitle("Succès")
+              .setDescription(`${messages.size} messages ont été supprimés.`)
+            if (messages.size === 1) {
+              interaction.reply({ embeds: [embed_tous_1], ephemeral: true });
+            } else {
+              interaction.reply({ embeds: [embed_tous_multi], ephemeral: true });
+            }
+          });
+        }
+      }
+  
+    }
+  
+    if (commandName === 'réseaux') {
+      // ActionRowBuilder() and then send it
+      let branchMenu = new Discord.MessageActionRow()
+        .addComponents([
+          new Discord.MessageSelectMenu()
+          .setCustomId('réseaux')
+          .setPlaceholder('Choisissez un réseau')
+          .addOptions([
+            {
+              label: 'Twitch',
+              description: 'Chaine Twitch',
+              value: `Twitch`,
+              emoji: '🎮',
+            },
+            {
+              label: 'YouTube',
+              description: 'Chaine youtube',
+              value: `Youtube`,
+              emoji: '🎥',
+            },
+            {
+              label: 'Tiktok',
+              description: 'Compte tiktok',
+              value: `Tiktok`,
+              emoji: '📱',
+            }
+          ])
+        ])
+      interaction.reply({
+        content: 'Voici les plateformes / réseaux sociaux ou vous pouvez me retrouver :',
+        components: [branchMenu],
+        ephemeral: true,
+      });
       
     }
-    if (interaction.values[0] === "Twitch"){
-      const twitch = new Discord.MessageEmbed()
-        .setColor(color.violet)
-        .setDescription("https://twitch.tv/fast_theo")
-        
-      await interaction.update({
-        content: "Voici ma chaine Twitch :",
-        components: [],
-        embeds: [twitch],
-        ephemeral: true
-      })
-      
-    }
-    if (interaction.values[0] === "Tiktok"){
-      const tiktok = new Discord.MessageEmbed()
-        .setColor('FF4F67')
-        .setDescription("https://www.tiktok.com/@fast_theo")
-        
-      await interaction.update({
-        content: "Voici mon compte tiktok:",
-        components: [],
-        embeds: [tiktok],
-        ephemeral: true
-      })
-      
-    }
+  }else if (interaction.isSelectMenu()){
+    if(interaction.customId === "réseaux"){
 
+      if (interaction.values[0] === "Youtube"){
+        const youtube = new Discord.MessageEmbed()
+          .setColor(color.rouge)
+          .setDescription("https://www.youtube.com/channel/UCxqruUoare-3qIPZJFoKL7w")
+          
+        await interaction.update({
+          content: "Voici ma chaine YouTube :",
+          components: [],
+          embeds: [youtube],
+          ephemeral: true
+        })
+        
+      }
+      if (interaction.values[0] === "Twitch"){
+        const twitch = new Discord.MessageEmbed()
+          .setColor(color.violet)
+          .setDescription("https://twitch.tv/fast_theo")
+          
+        await interaction.update({
+          content: "Voici ma chaine Twitch :",
+          components: [],
+          embeds: [twitch],
+          ephemeral: true
+        })
+        
+      }
+      if (interaction.values[0] === "Tiktok"){
+        const tiktok = new Discord.MessageEmbed()
+          .setColor('FF4F67')
+          .setDescription("https://www.tiktok.com/@fast_theo")
+          
+        await interaction.update({
+          content: "Voici mon compte tiktok:",
+          components: [],
+          embeds: [tiktok],
+          ephemeral: true
+        })
+        
+      }
+
+    }
   }
-}
+
+  
 
 });
-
 client.login(config.DISCORD_TOKEN);
