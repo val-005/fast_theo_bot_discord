@@ -327,16 +327,19 @@ if (commandName === 'réseaux') {
         label: 'Twitch',
         description: 'Chaine Twitch',
         value: `Twitch`,
+        emoji: '🎮',
       },
       {
         label: 'YouTube',
         description: 'Chaine youtube',
         value: `Youtube`,
+        emoji: '🎥',
       },
       {
         label: 'Tiktok',
         description: 'Compte tiktok',
         value: `Tiktok`,
+        emoji: '📱',
       }
     ])
   ])
